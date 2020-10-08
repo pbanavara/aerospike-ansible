@@ -8,7 +8,7 @@
 
 - name: "Get available nvme drives"
   shell:
-    cmd: "ls /dev/nvme*p*"
+    cmd: "ls /dev/sda2"
   register: nvme_drives_list_output
   
 - name: Store nvme drive list as a fact

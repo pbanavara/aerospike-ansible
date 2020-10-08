@@ -17,15 +17,17 @@
 
     - block:
       - name: "stat {{ feature_key_path }}"
-        local_action: "stat path={{ feature_key_path }}"
+        #local_action: "stat path={{ feature_key_path }}"
+        stat:
+          path: "{{ feature_key_path }}"
         become: no
         register: feature_key_meta
 
-      - name: "Check feature key {{ feature_key_path }} exists"
-        fail:
-          msg: "Specified feature key {{ feature_key_path }} not found"
-        when: not feature_key_meta.stat.exists    
-      when: enterprise 
+      #- name: "Check feature key {{ feature_key_path }} exists"
+      #  fail:
+      #    msg: "Specified feature key {{ feature_key_path }} not found"
+      #  when: not feature_key_meta.stat.exists    
+      #when: enterprise 
 
     - name: Check whether download exists
       stat:
@@ -55,34 +57,39 @@
         chdir: "{{ download_file_dir }}/{{ install_directory }}"
         cmd: "{{ download_file_dir }}/{{ install_directory }}/asinstall"
 
-    - name: "Create {{ partition_script_name }} script"
-      template:
-        src: "assets/{{ partition_script_name }}.j2"
-        dest: "/tmp/{{ partition_script_name }}"
-        mode: 0755
-
-    - name: "Partition nvme drives"
-      shell: "/tmp/{{ partition_script_name }}"
-
     - name: aerospike.conf
       import_tasks: modules/aerospike-configuration-tasks.yml
     
+    # Create /var/log/aerospike
+    - name: Creates directory
+      file:
+        path: /var/log/aerospike
+        state: directory
+      become: yes
+
     - block:
-      - name: Feature key
-        copy:
-          src: "{{ feature_key_path }}"
-          dest: /etc/aerospike/features.conf
+      #- name: Feature key
+      #  copy:
+      #    src: "{{ feature_key_path }}"
+      #    dest: /etc/aerospike/features.conf
+      #    owner: root
+      #    group: root
+      #    mode: '0644'        
+      - name: Copy license
+        template:
+          src: "assets/{{ feature_key_file_name }}"
+          dest: "/etc/aerospike/{{ feature_key_file_name }}"
+          mode: '0644'
           owner: root
           group: root
-          mode: '0644'        
+        vars:
+          ip_address: "{{ hostvars[inventory_hostname].ansible_facts.all_ipv4_addresses[0] }}"    
       when: enterprise 
-
-    - import_tasks: modules/prometheus-exporter-install.yml
-      when: monitoring_enabled
 
     - name: Start Aerospike service
       shell: 
         cmd: "service aerospike start"
+      become: yes
 
     - block:
       - name: Copy roster set script
@@ -91,8 +98,8 @@
           dest: "/tmp/roster-set.sh"
           mode: "0755"
 
-      - name: "Set roster"
-        shell: "/tmp/roster-set.sh"
+      #- name: "Set roster"
+        #shell: "/tmp/roster-set.sh"
 
       when: strong_consistency 
 
@@ -107,32 +114,3 @@
       debug: 
         msg: "Aerospike is already installed - not re-installing"
     when: hostvars[inventory_hostname].services[aerospike_service_name] is defined
-
-  # May not be available as standard - this is the case on GCP
-  - name: Install sysstat
-    package:
-      name:
-        - sysstat
-      state: latest
-    become: yes
-
-- name: Update monitoring if enabled
-  hosts: "aerospike_monitoring"
-  gather_facts: true
-  become: yes
-  tasks:
-  - name: Import configuration properties
-    include_vars: 
-      dir: vars
-    
-  - name: Get service facts
-    service_facts:
-
-  # When Prometheus is installed, we update the config file - might be necessary as we have added nodes
-  - import_tasks: modules/prometheus-configuration.yml
-    when: hostvars[inventory_hostname].services[prometheus_service_name] is defined
-
-  - name: Restart prometheus
-    service:
-      name: prometheus
-      state: restarted

@@ -1,2 +1,0 @@
-- import_playbook: aws-setup.yml
-- import_playbook: install-aerospike.yml

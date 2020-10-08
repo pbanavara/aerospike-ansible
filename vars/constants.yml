@@ -30,8 +30,6 @@ aerospike_conf_file_name: aerospike.conf
 key_file_name: .aws.pem
 ip_address_script_name: ip-address-list.sh
 quick_ssh_script_name: quick-ssh.sh 
-partition_script_name: partition-script.sh
-
 
 # Prometheus / Grafana
 prometheus_service_name: "prometheus.service"
@@ -70,3 +68,6 @@ grafana_port: 4000
 cluster_name: aerospike_ansible_demo_cluster
 aerospike_service_name: "aerospike.service"
 temp_directory: "/tmp"
+
+#License file name
+feature_key_file_name: "features.conf"

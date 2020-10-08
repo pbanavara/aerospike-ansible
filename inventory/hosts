@@ -3,9 +3,7 @@ localhost ansible_python_interpreter=python
 
 [aerospike_cluster]
 ; for gcp add your cluster hostnames below e.g.
-; aero-01
-; aero-02
-; aero-03
+34.123.31.222 
 
 [aerospike_client]
 ; for gcp add your client hostnames below e.g.

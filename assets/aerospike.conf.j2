@@ -72,8 +72,6 @@ namespace test {
 	memory-size {{ ( ansible_facts.memtotal_mb * aerospike_mem_pct / 100 ) | int }}M
 	default-ttl 0d
 	nsup-period 600
-	{% if enterprise %}rack-id {% include "assets/sub-templates/reverse-formatted-subnet.j2" %}
-	{% endif %} 
 	{% if strong_consistency %}strong-consistency true
 	{% endif %}
 
