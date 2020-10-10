@@ -1,0 +1,41 @@
+---
+- name: Stop and start Aerospike
+  hosts: "aerospike_cluster"
+  gather_facts: true
+  become: yes
+  tasks:
+  - name: Import configuration properties
+    include_vars: 
+      dir: vars
+    
+  - name: Get service facts
+    service_facts:
+
+  - name: Creates directory
+    file:
+        path: {{ license_location }} 
+        state: directory
+    
+  - name: Creates directory
+    file:
+        path: {{ conf_location }}
+        state: directory
+
+  - name: Creates directory
+    file:
+        path: {{ log_location }} 
+        state: directory
+  
+  - name: Creates directory
+    file:
+        path: {{ java_location }} 
+        state: directory
+    
+  - name: Creates directory
+    file:
+        path: {{ namespace_location }} 
+        state: directory
+      
+  - name: aerospike.conf
+    import_tasks: modules/aerospike-configuration-tasks.yml
+    

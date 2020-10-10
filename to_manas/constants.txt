@@ -70,21 +70,12 @@ aerospike_service_name: "aerospike.service"
 temp_directory: "/tmp"
 
 feature_key_file_name: "features.conf"
-license_location: "/tmp/aerospike"
-conf_location: "/tmp/aerospike"
-namespace_location: "/tmp/aerospike_ns"
-java_location: "/tmp/java/latest"
-certs_location: "/tmp/java/certs"
-log_location: "/tmp/aerospike/log"
-
-
-aerospike_heartbeat_ips: [
-    "192.168.1.1",
-    "192.168.1.2"
-]
-
-
-
+license_location: "/data/aerospike"
+conf_location: "/data/aerospike"
+namespace_location: "/data/aerospike_ns"
+java_location: "/data/java/latest"
+certs_location: "/data/java/certs"
+log_location: "/data/aerospike/log"
 
 
 

@@ -6,34 +6,11 @@
   vars:
       cluster_ip_addresses: []
 
-- debug:
-    msg: " {{ cluster_ip_addresses[0] }}"
-
-- name: Get heartbeat ip addresses
-  set_fact:
-    heart_beat_ip_addresses: "{{ heart_beat_ip_addresses }} + [ '{{ item }}' ]"
-  with_items: 
-    "{{ aerospike_heartbeat_ips }}"
-  vars:
-      heart_beat_ip_addresses: []
-
-- debug:
-    msg: "{{ heart_beat_ip_addresses[0] }}"
-    msg: "{{ heart_beat_ip_addresses[1] }}"
-
 - name: "Get available nvme drives"
   shell:
     cmd: "ls /dev/sda2"
   register: nvme_drives_list_output
   
-- name: "Get hostname"
-  shell:
-    cmd: "hostname -i"
-  register: host_ip
-
-- debug:
-    msg: "{{ host_ip['stdout'] }}"
-
 - name: Store nvme drive list as a fact
   set_fact: 
     nvme_devices : "{{ nvme_drives_list_output.stdout_lines }}"

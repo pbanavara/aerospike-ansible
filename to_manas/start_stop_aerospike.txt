@@ -1,0 +1,17 @@
+---
+- name: Stop and start Aerospike
+  hosts: "aerospike_cluster"
+  gather_facts: true
+  become: yes
+  tasks:
+  - name: Import configuration properties
+    include_vars: 
+      dir: vars
+    
+  - name: Get service facts
+    service_facts:
+
+    
+  - name: Start Aerospike service
+    shell: 
+        cmd: "service aerospike start"

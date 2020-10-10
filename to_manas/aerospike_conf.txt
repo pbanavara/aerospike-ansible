@@ -42,15 +42,20 @@ network {
 	heartbeat {
 		mode mesh
 
-		{% for ip_address in heart_beat_ip_addresses %}mesh-seed-address-port {{ ip_address }} {{ heartbeat_port }}
+		{% if tls_enabled %}tls-port {{ tls_heartbeat_port }}
+		tls-name {{ tls_name }}
+		{% for ip_address in cluster_ip_addresses %}tls-mesh-seed-address-port {{ ip_address }} {{ tls_heartbeat_port }}
+		{% endfor %}{% else %}port {{ heartbeat_port }}
+		{% for ip_address in cluster_ip_addresses %}mesh-seed-address-port {{ ip_address }} {{ heartbeat_port }}
 		{% endfor %}
+		{% endif %}
 
 		interval 150
 		timeout 10
 	}
 
 	fabric {
-		address {{ host_ip['stdout'] }}
+		address eth0
 		{% if tls_enabled %}tls-port {{ tls_fabric_port }}
 		tls-name {{ tls_name }}{% else %}port {{ fabric_port }}{% endif %}		
 	}
