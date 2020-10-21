@@ -1,0 +1,15 @@
+---
+- name: "Configure Aerospike Namespace" 
+  hosts: "aerospike_cluster"
+  gather_facts: true
+  tasks:
+  - name: Import configuration properties
+    include_vars: 
+      dir: vars
+    
+  - name: Get service facts
+    service_facts:
+
+  - name: aerospike.conf
+    import_tasks: modules/aerospike-configuration-tasks.yml
+    

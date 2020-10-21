@@ -17,6 +17,14 @@
   vars:
       heart_beat_ip_addresses: []
 
+- name: Get data center ip addresses
+  set_fact:
+    other_dc_ips: "{{ other_dc_ips }} + [ '{{ item }}' ]"
+  with_items: 
+    "{{ other_dc_ip_addresses }}"
+  vars:
+      other_dc_ips: []
+
 - debug:
     msg: "{{ heart_beat_ip_addresses[0] }}"
     msg: "{{ heart_beat_ip_addresses[1] }}"
@@ -42,6 +50,23 @@
   template:
     src: "assets/{{ aerospike_conf_file_name }}.j2"
     dest: "{{ conf_location }}/{{ aerospike_conf_file_name }}"
+    mode: '0644'
+    owner: root
+    group: root
+  vars:
+    ip_address: "{{ hostvars[inventory_hostname].ansible_facts.all_ipv4_addresses[0] }}"    
+
+- name: Copy python script to add heartbeat plane addresses
+  template:
+    src: "assets/replace_heartbeat_address.py"
+    dest: "{{ conf_location }}/replace_heartbeat_address.py"
+  vars:
+    ip_address: "{{ hostvars[inventory_hostname].ansible_facts.all_ipv4_addresses[0] }}"    
+
+- name: Copy License
+  template:
+    src: "assets/{{ feature_key_file_name }}.j2"
+    dest: "{{ license_location }}/{{ feature_key_file_name }}"
     mode: '0644'
     owner: root
     group: root

@@ -49,6 +49,18 @@ local_certs_directory: "assets/certificates/certs"
 certificates_directory: /etc/aerospike/certs
 private_key_directory: "{{ certificates_directory }}/private"
 
+#XDR
+xdr_enabled: true
+xdr_digest_log_path: "/var/log/xdr"
+xdr_digest_log_size: 250G
+other_dc_name: "other_dc"
+
+other_dc_ip_addresses: [
+    "192.168.1.1",
+    "192.168.1.2"
+]
+
+
 # Ports
 service_port: 3000
 fabric_port: 3001
@@ -82,9 +94,4 @@ aerospike_heartbeat_ips: [
     "192.168.1.1",
     "192.168.1.2"
 ]
-
-
-
-
-
 

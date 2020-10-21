@@ -1,0 +1,12 @@
+# This YAML is to specifically add, delete and modify namespaces and namespace params
+
+# The commands in this playbook have to run on all hosts in parallel
+# So we won't change the order of things
+# All the namespace configurations have to be the same on all hosts
+
+---
+- name: Add or modify namespaces
+  hosts: "aerospike_cluster"
+  tasks:
+    - name: add namespace
+    

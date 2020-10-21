@@ -31,7 +31,6 @@ network {
 
 	service {
 		address eth0
-		
 		{% if tls_enabled %}tls-port {{ tls_service_port }}
 		tls-address any
 		tls-name {{ tls_name }}
@@ -41,7 +40,8 @@ network {
 
 	heartbeat {
 		mode mesh
-
+		adddress HEART_BEAT_ADDRESS_1
+		address HEART_BEAT_ADDRESS_2
 		{% for ip_address in heart_beat_ip_addresses %}mesh-seed-address-port {{ ip_address }} {{ heartbeat_port }}
 		{% endfor %}
 
@@ -79,3 +79,40 @@ namespace test {
 	}
 }
 
+{% if xdr_enabled %}	
+
+xdr {
+	enable-xdr true
+        xdr-digestlog-path {{ xdr_digest_log_path }} {{ xdr_digest_log_size }}
+        datacenter {{ other_dc_name }} {
+				{% for ip_address in other_dc_ips %}
+                dc-node-address-port {{ ip_address }} 3000
+				{% endfor %}
+        }
+}
+
+{% endif %}
+
+
+namespace ns_2 {
+	replication-factor {{ replication_factor }}
+	memory-size {{ ( ansible_facts.memtotal_mb * aerospike_mem_pct / 100 ) | int }}M
+	default-ttl 0d
+	nsup-period 600
+	{% if strong_consistency %}strong-consistency true
+	{% endif %}
+
+	{% if xdr_enabled %}
+		enable-xdr true
+		xdr-remote-datacenter {{ other_dc_name }} 
+	{% endif %}
+
+	# To use file storage backing, comment out the line above and use the
+	# following lines instead.
+	storage-engine device {
+		{% for nvme_device in nvme_devices %}device {{ nvme_device }} 
+		{% endfor %}data-in-memory false # Store data in memory in addition to
+		file {{ namespace_location }}/test.dat
+		min-avail-pct 10
+	}
+}
